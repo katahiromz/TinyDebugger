@@ -1,0 +1,2 @@
+user32	stdcall	MessageBoxA	ptr	str	str	long
+user32	stdcall	MessageBoxW	ptr	wstr	wstr	long
