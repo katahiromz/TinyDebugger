@@ -12,6 +12,12 @@
 #define EFLAGS_SINGLESTEP 0x00000100
 #define MAX_ARGS 16
 
+#ifdef _WIN64
+    #define REG_IP(ctx) (ctx).Rip
+#else
+    #define REG_IP(ctx) (ctx).Eip
+#endif
+
 struct DataEntryEx : DataEntry
 {
     DWORD_PTR ret_addr = 0;
@@ -298,11 +304,7 @@ void TinyD::OnBreakPoint(DEBUG_EVENT& de)
 
     for (auto& entry : impl().m_entries)
     {
-#ifdef _WIN64
-        if (ctx.Rip - 1 == (DWORD_PTR)entry.fn)
-#else
-        if (ctx.Eip - 1 == (DWORD_PTR)entry.fn)
-#endif
+        if (REG_IP(ctx) - 1 == (DWORD_PTR)entry.fn)
         {
             DWORD_PTR pdw[MAX_ARGS] = { 0 };
             DoReadArgs(impl().m_hProcess, entry, ctx, pdw);
@@ -315,13 +317,8 @@ void TinyD::OnBreakPoint(DEBUG_EVENT& de)
             byte = 0xCC; // INT3
             DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)entry.ret_addr, &byte, sizeof(byte), TRUE);
 
-#ifdef _WIN64
-            ctx.Rip--;
-            DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)ctx.Rip, &entry.byte1, sizeof(entry.byte1), TRUE);
-#else
-            ctx.Eip--;
-            DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)ctx.Eip, &entry.byte1, sizeof(entry.byte1), TRUE);
-#endif
+            REG_IP(ctx)--;
+            DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)REG_IP(ctx), &entry.byte1, sizeof(entry.byte1), TRUE);
             FlushInstructionCache(impl().m_hProcess, NULL, 0);
 
             ctx.EFlags |= EFLAGS_SINGLESTEP;
@@ -330,22 +327,15 @@ void TinyD::OnBreakPoint(DEBUG_EVENT& de)
             entry.refcount += 1;
             break;
         }
-#ifdef _WIN64
-        else if (ctx.Rip - 1 == (DWORD_PTR)entry.ret_addr)
-#else
-        else if (ctx.Eip - 1 == (DWORD_PTR)entry.ret_addr)
-#endif
+        else if (REG_IP(ctx) - 1 == (DWORD_PTR)entry.ret_addr)
         {
             entry.refcount -= 1;
             if (entry.refcount == 0)
                 DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)entry.ret_addr, &entry.byte2, sizeof(entry.byte2), TRUE);
 
             OnLeaveProc(entry, ctx);
-#ifdef _WIN64
-            ctx.Rip--;
-#else
-            ctx.Eip--;
-#endif
+            REG_IP(ctx)--;
+
             FlushInstructionCache(impl().m_hProcess, NULL, 0);
 
             SetThreadContext(hThread, &ctx);
@@ -368,21 +358,13 @@ void TinyD::OnSingleStep(DEBUG_EVENT& de)
     for (DWORD i = 0; i < impl().m_entries.size(); ++i)
     {
         auto& entry = impl().m_entries[i];
-        //Printf("%p, %p\n", ctx.Eip, entry.fn);
-#ifdef _WIN64
-        if (ctx.Rip - 1 == (DWORD_PTR)entry.fn ||
-            ctx.Rip - 2 == (DWORD_PTR)entry.fn ||
-            ctx.Rip - 3 == (DWORD_PTR)entry.fn ||
-            ctx.Rip - 4 == (DWORD_PTR)entry.fn ||
-            ctx.Rip - 5 == (DWORD_PTR)entry.fn ||
-            ctx.Rip - 6 == (DWORD_PTR)entry.fn)
-#else
-        if (ctx.Eip - 1 == (DWORD_PTR)entry.fn ||
-            ctx.Eip - 2 == (DWORD_PTR)entry.fn ||
-            ctx.Eip - 3 == (DWORD_PTR)entry.fn ||
-            ctx.Eip - 4 == (DWORD_PTR)entry.fn ||
-            ctx.Eip - 5 == (DWORD_PTR)entry.fn)
-#endif
+        //Printf("%p, %p\n", REG_IP(ctx), entry.fn);
+        if (REG_IP(ctx) - 1 == (DWORD_PTR)entry.fn ||
+            REG_IP(ctx) - 2 == (DWORD_PTR)entry.fn ||
+            REG_IP(ctx) - 3 == (DWORD_PTR)entry.fn ||
+            REG_IP(ctx) - 4 == (DWORD_PTR)entry.fn ||
+            REG_IP(ctx) - 5 == (DWORD_PTR)entry.fn ||
+            REG_IP(ctx) - 6 == (DWORD_PTR)entry.fn)
         {
             BYTE byte = 0xCC; // INT3
             ::DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)entry.fn, &byte, sizeof(byte), TRUE);
