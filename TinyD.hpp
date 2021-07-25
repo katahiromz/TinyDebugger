@@ -29,7 +29,7 @@ public:
     virtual void OnEnterProc(DataEntryEx& entry, CONTEXT& ctx, DWORD_PTR *pdw);
     virtual void OnLeaveProc(DataEntryEx& entry, CONTEXT& ctx);
     virtual DWORD DebugLoop(void);
-    void DumpContext(DWORD dwThreadId);
+    void DumpContext(DWORD dwThreadId = 0);
 
 protected:
     TinyDImpl *m_pimpl;
@@ -41,7 +41,7 @@ protected:
     virtual DWORD OnExitProcess(DEBUG_EVENT& de, EXIT_PROCESS_DEBUG_INFO& ExitProcess);
     virtual void OnBreakPoint(DEBUG_EVENT& de);
     virtual void OnSingleStep(DEBUG_EVENT& de);
-    virtual void OnDebugEvent(DEBUG_EVENT& de);
+    virtual bool OnDebugEvent(DEBUG_EVENT& de);
     virtual void OnDebugString(OUTPUT_DEBUG_STRING_INFO& DebugString);
     virtual void OnLoadDll(DEBUG_EVENT& de, LOAD_DLL_DEBUG_INFO& LoadDll);
     virtual void OnUnloadDll(DEBUG_EVENT& de, UNLOAD_DLL_DEBUG_INFO& UnloadDll);

@@ -49,6 +49,8 @@ struct TinyDImpl
     PROCESS_INFORMATION m_pi;
     HANDLE& m_hProcess = m_pi.hProcess;
     HANDLE& m_hThread = m_pi.hThread;
+    DWORD& m_dwPID = m_pi.dwProcessId;
+    DWORD& m_dwTID = m_pi.dwThreadId;
     std::vector<DataEntryEx> m_entries;
     std::map<DWORD, HANDLE> m_id_to_thread;
 
@@ -379,6 +381,9 @@ void TinyD::OnSingleStep(DEBUG_EVENT& de)
 
 void TinyD::DumpContext(DWORD dwThreadId)
 {
+    if (dwThreadId == 0)
+        dwThreadId = impl().m_dwTID;
+
     auto it = impl().m_id_to_thread.find(dwThreadId);
     if (it == impl().m_id_to_thread.end())
         return;
@@ -403,7 +408,7 @@ void TinyD::DumpContext(DWORD dwThreadId)
 #endif
 }
 
-void TinyD::OnDebugEvent(DEBUG_EVENT& de)
+bool TinyD::OnDebugEvent(DEBUG_EVENT& de)
 {
     auto& Exception = de.u.Exception;
     auto& ExceptionRecord = Exception.ExceptionRecord;
@@ -413,9 +418,11 @@ void TinyD::OnDebugEvent(DEBUG_EVENT& de)
     {
     case EXCEPTION_ACCESS_VIOLATION:
         Printf("EXCEPTION_ACCESS_VIOLATION\n");
-        break;
+        DumpContext();
+        return false;
     case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
         Printf("EXCEPTION_ARRAY_BOUNDS_EXCEEDED\n");
+        DumpContext();
         break;
     case EXCEPTION_BREAKPOINT:
         //Printf("EXCEPTION_BREAKPOINT\n");
@@ -423,48 +430,63 @@ void TinyD::OnDebugEvent(DEBUG_EVENT& de)
         break;
     case EXCEPTION_DATATYPE_MISALIGNMENT:
         Printf("EXCEPTION_DATATYPE_MISALIGNMENT\n");
+        DumpContext();
         break;
     case EXCEPTION_FLT_DENORMAL_OPERAND:
         Printf("EXCEPTION_FLT_DENORMAL_OPERAND\n");
+        DumpContext();
         break;
     case EXCEPTION_FLT_DIVIDE_BY_ZERO:
         Printf("EXCEPTION_FLT_DIVIDE_BY_ZERO\n");
+        DumpContext();
         break;
     case EXCEPTION_FLT_INEXACT_RESULT:
         Printf("EXCEPTION_FLT_INEXACT_RESULT\n");
+        DumpContext();
         break;
     case EXCEPTION_FLT_INVALID_OPERATION:
         Printf("EXCEPTION_FLT_INVALID_OPERATION\n");
+        DumpContext();
         break;
     case EXCEPTION_FLT_OVERFLOW:
         Printf("EXCEPTION_FLT_OVERFLOW\n");
+        DumpContext();
         break;
     case EXCEPTION_FLT_STACK_CHECK:
         Printf("EXCEPTION_FLT_STACK_CHECK\n");
+        DumpContext();
         break;
     case EXCEPTION_FLT_UNDERFLOW:
         Printf("EXCEPTION_FLT_UNDERFLOW\n");
+        DumpContext();
         break;
     case EXCEPTION_ILLEGAL_INSTRUCTION:
         Printf("EXCEPTION_ILLEGAL_INSTRUCTION\n");
+        DumpContext();
         break;
     case EXCEPTION_IN_PAGE_ERROR:
         Printf("EXCEPTION_IN_PAGE_ERROR\n");
+        DumpContext();
         break;
     case EXCEPTION_INT_DIVIDE_BY_ZERO:
         Printf("EXCEPTION_INT_DIVIDE_BY_ZERO\n");
+        DumpContext();
         break;
     case EXCEPTION_INT_OVERFLOW:
         Printf("EXCEPTION_INT_OVERFLOW\n");
+        DumpContext();
         break;
     case EXCEPTION_INVALID_DISPOSITION:
         Printf("EXCEPTION_INVALID_DISPOSITION\n");
+        DumpContext();
         break;
     case EXCEPTION_NONCONTINUABLE_EXCEPTION:
         Printf("EXCEPTION_NONCONTINUABLE_EXCEPTION\n");
+        DumpContext();
         break;
     case EXCEPTION_PRIV_INSTRUCTION:
         Printf("EXCEPTION_PRIV_INSTRUCTION\n");
+        DumpContext();
         break;
     case EXCEPTION_SINGLE_STEP:
         //Printf("EXCEPTION_SINGLE_STEP\n");
@@ -472,20 +494,27 @@ void TinyD::OnDebugEvent(DEBUG_EVENT& de)
         break;
     case EXCEPTION_STACK_OVERFLOW:
         Printf("EXCEPTION_STACK_OVERFLOW\n");
+        DumpContext();
         break;
     case EXCEPTION_GUARD_PAGE:
         Printf("EXCEPTION_GUARD_PAGE\n");
+        DumpContext();
         break;
     case EXCEPTION_INVALID_HANDLE:
         Printf("EXCEPTION_INVALID_HANDLE\n");
+        DumpContext();
         break;
     case CONTROL_C_EXIT:
         Printf("CONTROL_C_EXIT\n");
+        DumpContext();
         break;
     default:
         Printf("ExceptionCode: 0x%08lX\n", ExceptionCode);
+        DumpContext();
         break;
     }
+
+    return true;
 }
 
 void TinyD::OnDebugString(OUTPUT_DEBUG_STRING_INFO& DebugString)
@@ -587,7 +616,11 @@ DWORD TinyD::DebugLoop(void)
         {
         case EXCEPTION_DEBUG_EVENT:
             //Printf("EXCEPTION_DEBUG_EVENT\n");
-            OnDebugEvent(de);
+            if (!OnDebugEvent(de))
+            {
+                dwStatus = DBG_EXCEPTION_NOT_HANDLED;
+                bContinue = FALSE;
+            }
             break;
         case CREATE_THREAD_DEBUG_EVENT:
             //Printf("CREATE_THREAD_DEBUG_EVENT\n");
