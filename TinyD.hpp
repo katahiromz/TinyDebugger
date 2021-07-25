@@ -29,6 +29,7 @@ public:
     virtual void OnEnterProc(DataEntryEx& entry, CONTEXT& ctx, DWORD_PTR *pdw);
     virtual void OnLeaveProc(DataEntryEx& entry, CONTEXT& ctx);
     virtual DWORD DebugLoop(void);
+    void DumpContext(DWORD dwThreadId);
 
 protected:
     TinyDImpl *m_pimpl;

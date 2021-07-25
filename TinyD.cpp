@@ -377,6 +377,32 @@ void TinyD::OnSingleStep(DEBUG_EVENT& de)
     }
 }
 
+void TinyD::DumpContext(DWORD dwThreadId)
+{
+    auto it = impl().m_id_to_thread.find(dwThreadId);
+    if (it == impl().m_id_to_thread.end())
+        return;
+    auto hThread = it->second;
+
+    CONTEXT ctx;
+    ctx.ContextFlags = CONTEXT_FULL;
+    ::GetThreadContext(hThread, &ctx);
+
+#ifdef _WIN64
+    Printf(
+        "RDI:%p RSI:%p RBX:%p RDX:%p RCX:%p\n"
+        "RAX:%p RBP:%p RIP:%p RSP:%p EFlags:%p\n",
+        ctx.Rdi, ctx.Rsi, ctx.Rbx, ctx.Rdx, ctx.Rcx,
+        ctx.Rax, ctx.Rbp, ctx.Rip, ctx.Rsp, ctx.EFlags);
+#else
+    Printf(
+        "EDI:%p ESI:%p EBX:%p EDX:%p ECX:%p\n"
+        "EAX:%p EBP:%p EIP:%p ESP:%p EFlags:%p\n",
+        ctx.Edi, ctx.Esi, ctx.Ebx, ctx.Edx, ctx.Ecx,
+        ctx.Eax, ctx.Ebp, ctx.Eip, ctx.Esp, ctx.EFlags);
+#endif
+}
+
 void TinyD::OnDebugEvent(DEBUG_EVENT& de)
 {
     auto& Exception = de.u.Exception;
