@@ -31,6 +31,8 @@ public:
     virtual DWORD DebugLoop(void);
     void DumpContext(DWORD dwThreadId = 0);
 
+    void AddForbidden(const char *func_name);
+
 protected:
     TinyDImpl *m_pimpl;
     TinyDImpl& impl();

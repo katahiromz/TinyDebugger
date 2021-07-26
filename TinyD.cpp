@@ -5,6 +5,7 @@
 #include <psapi.h>
 #include <shlwapi.h>
 #include <map>
+#include <set>
 #include <cstdio>
 #include <cassert>
 #include <clocale>
@@ -53,6 +54,7 @@ struct TinyDImpl
     DWORD& m_dwTID = m_pi.dwThreadId;
     std::vector<DataEntryEx> m_entries;
     std::map<DWORD, HANDLE> m_id_to_thread;
+    std::set<std::string> m_forbidden;
 
     TinyDImpl()
     {
@@ -67,6 +69,11 @@ struct TinyDImpl
             ::CloseHandle(m_hThread);
     }
 };
+
+void TinyD::AddForbidden(const char *func_name)
+{
+    impl().m_forbidden.insert(func_name);
+}
 
 static void
 DoReadArgs(HANDLE hProcess, DataEntryEx& entry, const CONTEXT& ctx, DWORD_PTR *pdw)
@@ -308,25 +315,39 @@ void TinyD::OnBreakPoint(DEBUG_EVENT& de)
     {
         if (REG_IP(ctx) - 1 == (DWORD_PTR)entry.fn)
         {
-            DWORD_PTR pdw[MAX_ARGS] = { 0 };
-            DoReadArgs(impl().m_hProcess, entry, ctx, pdw);
-            OnEnterProc(entry, ctx, pdw);
+            if (impl().m_forbidden.count(entry.func_name) > 0)
+            {
+                Printf("%s(...)\n", entry.func_name.c_str());
 
-            entry.ret_addr = pdw[0];
-            DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)entry.ret_addr, &byte, sizeof(byte), FALSE);
-            entry.byte2 = byte;
+                REG_IP(ctx)--;
+                DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)REG_IP(ctx), &entry.byte1, sizeof(entry.byte1), TRUE);
+                FlushInstructionCache(impl().m_hProcess, NULL, 0);
 
-            byte = 0xCC; // INT3
-            DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)entry.ret_addr, &byte, sizeof(byte), TRUE);
+                ctx.EFlags |= EFLAGS_SINGLESTEP;
+                SetThreadContext(hThread, &ctx);
+            }
+            else
+            {
+                DWORD_PTR pdw[MAX_ARGS] = { 0 };
+                DoReadArgs(impl().m_hProcess, entry, ctx, pdw);
+                OnEnterProc(entry, ctx, pdw);
 
-            REG_IP(ctx)--;
-            DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)REG_IP(ctx), &entry.byte1, sizeof(entry.byte1), TRUE);
-            FlushInstructionCache(impl().m_hProcess, NULL, 0);
+                entry.ret_addr = pdw[0];
+                DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)entry.ret_addr, &byte, sizeof(byte), FALSE);
+                entry.byte2 = byte;
 
-            ctx.EFlags |= EFLAGS_SINGLESTEP;
-            SetThreadContext(hThread, &ctx);
+                byte = 0xCC; // INT3
+                DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)entry.ret_addr, &byte, sizeof(byte), TRUE);
 
-            entry.refcount += 1;
+                REG_IP(ctx)--;
+                DoReadWriteProcessMemory(impl().m_hProcess, (LPVOID)REG_IP(ctx), &entry.byte1, sizeof(entry.byte1), TRUE);
+                FlushInstructionCache(impl().m_hProcess, NULL, 0);
+
+                ctx.EFlags |= EFLAGS_SINGLESTEP;
+                SetThreadContext(hThread, &ctx);
+
+                entry.refcount += 1;
+            }
             break;
         }
         else if (REG_IP(ctx) - 1 == (DWORD_PTR)entry.ret_addr)

@@ -10,6 +10,11 @@ int wmain( int argc, wchar_t **argv)
 
     TinyD td;
 
+    td.AddForbidden("CharUpperW");
+    td.AddForbidden("LoadIconW");
+    td.AddForbidden("LoadCursorW");
+    td.AddForbidden("CreateWindowExW");
+
     std::vector<DataEntry> entries;
     if (DAT_load("data.dat", entries))
     {

@@ -1,2 +1,157 @@
-user32	stdcall	MessageBoxA	ptr	str	str	long
-user32	stdcall	MessageBoxW	ptr	wstr	wstr	long
+user32	stdcall	keybd_event	long	long	long	long
+user32	stdcall	UpdateWindow	long
+user32	stdcall	UnloadKeyboardLayout	long
+user32	stdcall	ToUnicode	long	long	ptr	ptr	long	long
+user32	stdcall	SystemParametersInfoW	long	long	ptr	long
+user32	stdcall	ShowWindow	long	long
+user32	stdcall	SetWindowPos	long	long	long	long	long	long	long
+user32	stdcall	SendMessageTimeoutW	long	long	long	long	long	long	ptr
+user32	stdcall	SendMessageA	long	long	long	long
+user32	stdcall	ScreenToClient	long	ptr
+user32	stdcall	PostMessageW	long	long	long	long
+user32	stdcall	PostMessageA	long	long	long	long
+user32	stdcall	MonitorFromWindow	long	long
+user32	stdcall	MessageBeep	long
+user32	stdcall	MapVirtualKeyW	long	long
+user32	stdcall	LoadKeyboardLayoutW	wstr	long
+imm32	stdcall	ImmLockImeDpi	ptr
+imm32	stdcall	ImmReSizeIMCC	ptr	long
+imm32	stdcall	ImmGetCandidateListCountW	long	ptr
+user32	stdcall	CreateWindowExW	long	wstr	wstr	long	long	long	long	long	long	long	long	ptr
+imm32	stdcall	ImmSetStatusWindowPos	ptr	ptr
+imm32	stdcall	CtfImmIsCiceroEnabled
+imm32	stdcall	ImmSetActiveContextConsoleIME	ptr	long
+user32	stdcall	DestroyWindow	long
+user32	stdcall	GetWindow	long	long
+imm32	stdcall	ImmRequestMessageA	ptr	long	long
+user32	stdcall	User32InitializeImmEntryTable	ptr
+user32	stdcall	CharNextA	str
+user32	stdcall	ClientToScreen	long	ptr
+imm32	stdcall	ImmSetCompositionFontW	ptr	ptr
+imm32	stdcall	ImmGetDescriptionW	long	ptr	long
+imm32	stdcall	ImmTranslateMessage	ptr	long	long	long
+imm32	stdcall	ImmGetIMEFileNameW	long	ptr	long
+imm32	stdcall	ImmGetStatusWindowPos	ptr	ptr
+user32	stdcall	LoadBitmapW	long	wstr
+imm32	stdcall	ImmGetIMCCLockCount	ptr
+imm32	stdcall	ImmGetGuideLineA	ptr	long	ptr	long
+user32	stdcall	GetClassInfoExW	long	wstr	ptr
+imm32	stdcall	ImmGetHotKey	long	ptr	ptr	ptr
+imm32	stdcall	ImmGetDefaultIMEWnd	ptr
+imm32	stdcall	ImmGetCompositionStringW	ptr	long	ptr	long
+imm32	stdcall	ImmEscapeA	long	ptr	long	ptr
+imm32	stdcall	ImmRequestMessageW	ptr	long	long
+imm32	stdcall	ImmGetIMCCSize	ptr
+imm32	stdcall	ImmGetGuideLineW	ptr	long	ptr	long
+imm32	stdcall	ImmDestroyIMCC	ptr
+imm32	stdcall	ImmEnumRegisterWordW	long	ptr	wstr	long	wstr	ptr
+imm32	stdcall	ImmDestroySoftKeyboard	ptr
+imm32	stdcall	ImmGetRegisterWordStyleW	long	long	ptr
+imm32	stdcall	ImmGetConversionListW	long	ptr	wstr	ptr	long	long
+user32	stdcall	IsWindow	long
+imm32	stdcall	ImmDisableIME	long
+imm32	stdcall	ImmConfigureIMEA	ptr	ptr	long	ptr
+imm32	stdcall	ImmDisableLegacyIME
+imm32	stdcall	ImmGetCompositionWindow	ptr	ptr
+imm32	stdcall	ImmAssociateContext	ptr	ptr
+user32	stdcall	GetKeyboardLayoutList	long	ptr
+imm32	stdcall	ImmDisableTextFrameService	long
+imm32	stdcall	ImmGetCandidateListW	long	long	ptr	long
+imm32	stdcall	ImmLockIMCC	ptr
+imm32	stdcall	ImmGetCandidateWindow	long	long	ptr
+imm32	stdcall	ImmRegisterClient	ptr	ptr
+imm32	stdcall	ImmGetIMCLockCount	ptr
+user32	stdcall	GetClassInfoW	long	wstr	ptr
+user32	stdcall	SetCursor	long
+imm32	stdcall	ImmGetVirtualKey	ptr
+user32	stdcall	SetCapture	long
+user32	stdcall	GetFocus
+imm32	stdcall	ImmEnumInputContext	long	ptr	long
+imm32	stdcall	ImmGetRegisterWordStyleA	long	long	ptr
+imm32	stdcall	ImmGetIMEFileNameA	long	ptr	long
+imm32	stdcall	ImmGetContext	ptr
+imm32	stdcall	ImmEnumRegisterWordA	long	ptr	str	long	str	ptr
+imm32	stdcall	ImmDisableIme	long
+imm32	stdcall	ImmGetImeMenuItemsA	ptr	long	long	ptr	ptr	long
+imm32	stdcall	ImmGetConversionListA	long	ptr	str	ptr	long	long
+imm32	stdcall	ImmSetOpenStatus	ptr	long
+imm32	stdcall	ImmGenerateMessage	ptr
+imm32	stdcall	ImmIsUIMessageW	long	long	long	long
+imm32	stdcall	ImmGetCompositionFontW	ptr	ptr
+imm32	stdcall	ImmConfigureIMEW	ptr	ptr	long	ptr
+user32	stdcall	CharUpperW	wstr
+imm32	stdcall	ImmSimulateHotKey	ptr	long
+imm32	stdcall	ImmSetCompositionStringA	ptr	long	ptr	long	ptr	long
+imm32	stdcall	ImmSetConversionStatus	ptr	long	long
+imm32	stdcall	ImmCreateContext
+imm32	stdcall	ImmUnlockImeDpi	ptr
+imm32	stdcall	ImmCreateIMCC	long
+imm32	stdcall	ImmGetProperty	long	long
+imm32	stdcall	ImmNotifyIME	ptr	long	long	long
+imm32	stdcall	ImmProcessKey	ptr	long	long	long	long
+imm32	stdcall	ImmSetActiveContext	ptr	ptr	long
+imm32	stdcall	ImmGetImeMenuItemsW	ptr	long	long	ptr	ptr	long
+imm32	stdcall	ImmSetCompositionFontA	ptr	ptr
+user32	stdcall	DrawEdge	long	ptr	long	long
+user32	stdcall	ToAsciiEx	long	long	ptr	ptr	long	long
+imm32	stdcall	ImmRegisterWordW	long	wstr	long	wstr
+imm32	stdcall	ImmAssociateContextEx	ptr	ptr	long
+imm32	stdcall	ImmSetCompositionWindow	ptr	ptr
+imm32	stdcall	ImmRegisterWordA	long	str	long	str
+imm32	stdcall	ImmReleaseContext	ptr	ptr
+imm32	stdcall	ImmShowSoftKeyboard	ptr	long
+imm32	stdcall	ImmGetOpenStatus	ptr
+imm32	stdcall	ImmGetDescriptionA	long	ptr	long
+user32	stdcall	SetWindowLongW	long	long	long
+imm32	stdcall	ImmUnlockClientImc	ptr
+imm32	stdcall	ImmCreateSoftKeyboard	long	long	long	long
+imm32	stdcall	ImmGetCandidateListCountA	long	ptr
+imm32	stdcall	ImmUnlockIMC	ptr
+imm32	stdcall	ImmGetCompositionFontA	ptr	ptr
+imm32	stdcall	ImmGetConversionStatus	ptr	ptr	ptr
+user32	stdcall	BeginPaint	long	ptr
+user32	stdcall	GetMonitorInfoW	long	ptr
+user32	stdcall	RegisterClassExW	ptr
+imm32	stdcall	ImmIsIME	long
+user32	stdcall	SendMessageW	long	long	long	long
+user32	stdcall	DrawTextExW	long	wstr	long	ptr	long	ptr
+imm32	stdcall	ImmSetCompositionStringW	ptr	long	ptr	long	ptr	long
+user32	stdcall	EndPaint	long	ptr
+imm32	stdcall	ImmEscapeW	long	ptr	long	ptr
+imm32	stdcall	ImmGetImeInfoEx	ptr	long	ptr
+imm32	stdcall	ImmInstallIMEW	wstr	wstr
+imm32	stdcall	ImmIsUIMessageA	long	long	long	long
+user32	stdcall	GetActiveWindow
+user32	stdcall	ReleaseDC	long	long
+user32	stdcall	GetCapture
+user32	stdcall	GetClientRect	long	long
+imm32	stdcall	ImmUnregisterWordA	long	str	long	str
+user32	stdcall	ReleaseCapture
+user32	stdcall	GetCursorPos	ptr
+user32	stdcall	GetDC	long
+imm32	stdcall	ImmUnlockIMCC	ptr
+user32	stdcall	GetDesktopWindow
+imm32	stdcall	ImmUnregisterWordW	long	wstr	long	wstr
+user32	stdcall	GetSystemMetrics	long
+user32	stdcall	GetForegroundWindow
+user32	stdcall	GetKeyboardLayout	long
+user32	stdcall	WCSToMBEx	long	wstr	long	str	long	long
+user32	stdcall	GetKeyboardState	ptr
+imm32	stdcall	ImmDestroyContext	ptr
+imm32	stdcall	ImmInstallIMEA	str	str
+imm32	stdcall	ImmLockIMC	ptr
+user32	stdcall	DefWindowProcW	long	long	long	long
+imm32	stdcall	ImmGetCompositionStringA	ptr	long	ptr	long
+user32	stdcall	GetParent	long
+user32	stdcall	LoadIconW	long	wstr
+imm32	stdcall	ImmSetCandidateWindow	ptr	ptr
+user32	stdcall	LoadCursorW	long	wstr
+user32	stdcall	MapWindowPoints	long	long	ptr	long
+user32	stdcall	CharNextW	wstr
+user32	stdcall	GetWindowLongW	long	long
+user32	stdcall	GetWindowRect	long	ptr
+user32	stdcall	GetWindowThreadProcessId	long	ptr
+imm32	stdcall	ImmGetCandidateListA	long	long	ptr	long
+user32	stdcall	InvalidateRect	long	ptr	long
+imm32	stdcall	ImmLockClientImc	ptr
+user32	stdcall	IsWindowUnicode	long

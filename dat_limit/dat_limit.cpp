@@ -6,12 +6,12 @@ int main(int argc, char **argv)
 {
     if (argc == 2 && lstrcmpA(argv[1], "--version") == 0)
     {
-        puts("dat_limited version 0.0");
+        puts("dat_limit version 0.0");
         return 0;
     }
     if (argc <= 3 || lstrcmpA(argv[1], "--help") == 0)
     {
-        fprintf(stderr, "Usage: dat_limited your_file.dll input.dat output.dat\n");
+        fprintf(stderr, "Usage: dat_limit your_file.dll input.dat output.dat\n");
         return 0;
     }
 

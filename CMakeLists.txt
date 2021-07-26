@@ -24,10 +24,17 @@ add_executable(spec2dat
 target_include_directories(spec2dat PRIVATE .)
 target_link_libraries(spec2dat PRIVATE shlwapi)
 
-# dat_limited.exe
-add_executable(dat_limited
+# dat_limit.exe
+add_executable(dat_limit
     dat.cpp
     MR.cpp
-    dat_limited/dat_limited.cpp)
-target_include_directories(dat_limited PRIVATE .)
-target_link_libraries(dat_limited PRIVATE shlwapi)
+    dat_limit/dat_limit.cpp)
+target_include_directories(dat_limit PRIVATE .)
+target_link_libraries(dat_limit PRIVATE shlwapi)
+
+# dat2gdb.exe
+add_executable(dat2gdb
+    dat.cpp
+    dat2gdb/dat2gdb.cpp)
+target_include_directories(dat2gdb PRIVATE .)
+target_link_libraries(dat2gdb PRIVATE shlwapi)
